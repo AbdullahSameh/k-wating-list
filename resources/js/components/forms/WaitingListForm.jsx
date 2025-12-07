@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const WaitingListForm = ({ locale, translations, submitUrl }) => {
+const WaitingListForm = ({ locale, translations, submit_url }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -10,7 +10,7 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
-
+    const [errorMessage, setErrorMessage] = useState("");
     const isRtl = locale === "ar";
 
     const handleChange = (e) => {
@@ -22,33 +22,17 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
         }
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!formData.name.trim()) {
-            newErrors.name = translations.name_required;
-        }
-
-        if (!formData.email.trim()) {
-            newErrors.email = translations.email_required;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = translations.email_invalid;
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
-
-        setIsSubmitting(true);
+        // reset previous errors and messages
+        setErrors({});
+        setErrorMessage("");
         setSubmitStatus(null);
+        setIsSubmitting(true);
 
         try {
-            const response = await fetch(submitUrl, {
+            const response = await fetch(submit_url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -60,14 +44,55 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
                 body: JSON.stringify(formData),
             });
 
-            if (response.ok) {
-                setSubmitStatus("success");
-                setFormData({ name: "", email: "", phone: "", store_url: "" });
-            } else {
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Handle 422 Validation Errors
+                if (response.status === 422) {
+                    console.log("422 Validation Errors");
+
+                    setSubmitStatus("error");
+
+                    // Laravel returns errors in this format:
+                    // { message: "...", errors: { field: ["error1", "error2"] } }
+                    if (data.errors) {
+                        const formattedErrors = {};
+                        Object.keys(data.errors).forEach((key) => {
+                            // Take first error message for each field
+                            formattedErrors[key] = data.errors[key][0];
+                        });
+                        setErrors(formattedErrors);
+                    }
+
+                    setErrorMessage(translations.validation_error);
+                    return;
+                }
+
+                // Handle 500 Server Errors or other errors
+                if (response.status === 500) {
+                    console.log("500 Server Errors");
+
+                    setSubmitStatus("error");
+                    setErrorMessage(translations.server_error);
+                    return;
+                }
+
+                // Handle any other HTTP errors
                 setSubmitStatus("error");
+                setErrorMessage(data.message || translations.error_message);
+                return;
             }
+
+            // Success
+            setSubmitStatus("success");
+            setFormData({ name: "", email: "", phone: "", store_url: "" });
         } catch (error) {
+            // Network errors, parsing errors, etc.
+            console.log("Network errors, parsing errors, etc");
+
+            console.error("Submit error:", error);
             setSubmitStatus("error");
+            setErrorMessage(translations.error_message);
         } finally {
             setIsSubmitting(false);
         }
@@ -111,6 +136,7 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
 
     return (
         <form
+            id="waiting-list-form"
             onSubmit={handleSubmit}
             className="space-y-5"
             dir={isRtl ? "rtl" : "ltr"}
@@ -131,7 +157,7 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
                         />
                     </svg>
                     <p className="text-sm text-kunooz-status-error">
-                        {translations.error_message}
+                        {errorMessage}
                     </p>
                 </div>
             )}
@@ -229,11 +255,24 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder={translations.phone_placeholder}
-                    className={`w-full px-4 py-3 rounded-xl border border-kunooz-border-subtle focus:ring-kunooz-primary-500/80 focus:outline-none focus:ring-2 focus:border-transparent bg-white transition-all duration-200 ${
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                        errors.phone
+                            ? "border-kunooz-status-error focus:ring-kunooz-status-error/30"
+                            : "border-kunooz-border-subtle focus:ring-kunooz-primary-500/80"
+                    } focus:outline-none focus:ring-2 focus:border-transparent bg-white transition-all duration-200 ${
                         isRtl ? "text-right" : "text-left"
                     }`}
                     dir="ltr"
                 />
+                {errors.phone && (
+                    <p
+                        className={`text-sm text-kunooz-status-error ${
+                            isRtl ? "text-right" : "text-left"
+                        }`}
+                    >
+                        {errors.phone}
+                    </p>
+                )}
             </div>
 
             {/* Store URL Field */}
@@ -253,9 +292,22 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
                     value={formData.store_url}
                     onChange={handleChange}
                     placeholder={translations.store_placeholder}
-                    className={`w-full px-4 py-3 rounded-xl border border-kunooz-border-subtle focus:ring-kunooz-primary-500/80 focus:outline-none focus:ring-2 focus:border-transparent bg-white transition-all duration-200`}
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                        errors.store_url
+                            ? "border-kunooz-status-error focus:ring-kunooz-status-error/30"
+                            : "border-kunooz-border-subtle focus:ring-kunooz-primary-500/80"
+                    } focus:outline-none focus:ring-2 focus:border-transparent bg-white transition-all duration-200`}
                     dir="ltr"
                 />
+                {errors.store_url && (
+                    <p
+                        className={`text-sm text-kunooz-status-error ${
+                            isRtl ? "text-right" : "text-left"
+                        }`}
+                    >
+                        {errors.store_url}
+                    </p>
+                )}
             </div>
 
             {/* Submit Button */}
@@ -293,19 +345,6 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
                 ) : (
                     <>
                         <span>{translations.cta}</span>
-                        <svg
-                            className={`w-5 h-5 ${isRtl ? "rotate-180" : ""}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"
-                            />
-                        </svg>
                     </>
                 )}
             </button>
@@ -315,7 +354,7 @@ const WaitingListForm = ({ locale, translations, submitUrl }) => {
                 class="w-full px-6 py-3 bg-gradient-kunooz-teal text-kunooz-text-onPrimary font-semibold rounded-xl shadow-kunooz-md hover:shadow-kunooz-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-ar text-base"
                 dir="rtl"
             >
-                احصل على وصول مبكر
+                {translations.cta}
             </button> */}
 
             {/* Privacy Note */}

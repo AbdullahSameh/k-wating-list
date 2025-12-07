@@ -16,7 +16,9 @@
     rel="stylesheet">
 
   <!-- Favicon -->
+  <link rel="icon" href="{{ asset('logo/kunooz_logo_icon.svg') }}" sizes="any">
   <link rel="icon" href="{{ asset('logo/kunooz_logo_icon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ asset('logo/kunooz_logo_icon.svg') }}">
 
   @viteReactRefresh
   @vite(['resources/css/app.css', 'resources/js/app.jsx'])
@@ -54,7 +56,7 @@
 
           <!-- CTA Button -->
           <a href="#waiting-list"
-            class="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base font-semibold text-white bg-gradient-kunooz rounded-full shadow-kunooz-md hover:shadow-kunooz-lg transition-all duration-300 transform hover:-translate-y-0.5">
+            class="hidden md:inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base font-semibold text-white bg-gradient-kunooz rounded-full shadow-kunooz-md hover:shadow-kunooz-lg transition-all duration-300 transform hover:-translate-y-0.5">
             <span>{{ __('coming-soon.header.cta') }}</span>
             <svg class="w-4 h-4 {{ app()->getLocale() === 'ar' ? 'rotate-180' : '' }}" fill="none" stroke="currentColor"
               viewBox="0 0 24 24">
@@ -106,6 +108,13 @@
                 {{ __('coming-soon.hero.secondary') }}
               </p>
             </div>
+
+            <div class="mt-8">
+              <a type="button" href="#waiting-list"
+                class="inline-flex justify-center gap-2 py-4 px-6 w-full md:w-auto min-w-48 text-base font-semibold text-white bg-gradient-kunooz rounded-xl shadow-kunooz-md hover:shadow-kunooz-lg transition-all duration-300 transform hover:-translate-y-0.5">
+                <span>{{ __('coming-soon.header.cta') }}</span>
+              </a>
+            </div>
           </div>
 
           <!-- Hero Image -->
@@ -155,7 +164,7 @@
                     </svg>
                   </div>
                   <div class="{{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}">
-                    <div class="text-xs text-kunooz-text-muted">{{ app()->getLocale() === 'ar' ? 'العملاء المتكررين' :
+                    <div class="text-xs text-kunooz-text-muted">{{ app()->getLocale() === 'ar' ? 'عملاء متكررين' :
                       'Repeat Customers' }}</div>
                     <div class="text-sm font-bold text-kunooz-primary-600">+89%</div>
                   </div>
@@ -192,7 +201,7 @@
               <!-- React Form Mount Point -->
               <div class="mt-6" id="waiting-list-form" data-react-component="WaitingListForm" data-props="{{ json_encode([
                 'locale' => app()->getLocale(),
-                'submit_url' => route('coming-soon.store', ['locale' => app()->getLocale()]),
+                'submit_url' => route('coming-soon.store'),
                 'translations' => [
                   'name_label' => __('coming-soon.form.name_label'),
                   'name_placeholder' => __('coming-soon.form.name_placeholder'),
@@ -202,14 +211,12 @@
                   'email_placeholder' => __('coming-soon.form.email_placeholder'),
                   'store_label' => __('coming-soon.form.store_label'),
                   'store_placeholder' => __('coming-soon.form.store_placeholder'),
-                  'cta' => __('coming-soon.form.cta'),
+                  'cta' => __('coming-soon.header.cta'),
                   'privacy_note' => __('coming-soon.form.privacy_note'),
                   'success_message' => __('coming-soon.form.success_message'),
                   'error_message' => __('coming-soon.form.error_message'),
-                  'email_required' => __('coming-soon.form.validation.email_required'),
-                  'email_invalid' => __('coming-soon.form.validation.email_invalid'),
-                  'name_required' => __('coming-soon.form.validation.name_required'),
-                  'privacy_message' => __('coming-soon.form.privacy_message'),
+                  'validation_error' => __('coming-soon.form.validation_error'),
+                  'server_error' => __('coming-soon.form.server_error'),
                 ],
               ]) }}"></div>
             </div>
@@ -240,8 +247,6 @@
       </div>
     </div>
   </footer>
-
-  {{-- @vite(['resources/js/app.jsx']) --}}
 </body>
 
 </html>

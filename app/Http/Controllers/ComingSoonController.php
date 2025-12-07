@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\WaitingListRequest;
+use App\Models\WaitingList;
 
 class ComingSoonController extends Controller
 {
@@ -21,22 +23,23 @@ class ComingSoonController extends Controller
     /**
      * Handle waiting list form submission.
      */
-    public function store(Request $request)
+    public function store(WaitingListRequest $request, string $locale)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'store_url' => 'nullable|url|max:255',
-        ]);
+        try {
+            $validated = $request->validated();
 
-        // TODO: Store the waiting list entry in the database
-        // For now, we'll just return a success response
+            WaitingList::create($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => __('coming-soon.form.success_message'),
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => __('coming-soon.form.success_message'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('coming-soon.form.error_message'),
+            ]);
+        }
     }
 }
 

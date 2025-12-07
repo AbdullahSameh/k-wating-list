@@ -1,5 +1,5 @@
 import "./bootstrap";
-import React from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { COMPONENTS } from "./components/index";
 
@@ -31,7 +31,11 @@ function mountReactComponents() {
             }
         }
 
-        createRoot(el).render(<Component {...props} />);
+        createRoot(el).render(
+            <StrictMode>
+                <Component {...props} />
+            </StrictMode>
+        );
     });
 }
 
