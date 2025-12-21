@@ -69,7 +69,7 @@
         <!-- Language Switcher + CTA -->
         <div class="flex items-center gap-3 md:gap-4">
           <!-- Language Switcher -->
-          <a href="{{ route('coming-soon', ['locale' => app()->getLocale() === 'en' ? 'ar' : 'en']) }}"
+          <a href="{{ route('waiting-list', ['locale' => app()->getLocale() === 'en' ? 'ar' : 'en']) }}"
             class="text-kunooz-text-muted hover:text-kunooz-primary-500 border-kunooz-border-subtle hover:border-kunooz-primary-500 hover:bg-kunooz-primary-500/5 inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-300">
             {{ app()->getLocale() === 'en' ? 'العربية' : 'English' }}
           </a>
@@ -158,7 +158,7 @@
                       {{ app()->getLocale() === 'ar'
                           ? 'نمو المبيعات'
                           : 'Sales
-                                                                                                            Growth' }}
+                                                                                                                                  Growth' }}
                     </div>
                     <div class="text-sm font-bold text-green-600">+127%</div>
                   </div>

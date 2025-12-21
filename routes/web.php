@@ -13,7 +13,7 @@ Route::get('/werr', function () {
 })->name('home');
 
 Route::get('/', function () {
-    return redirect()->route('coming-soon', ['locale' => app()->getLocale()]);
+    return redirect()->route('waiting-list', ['locale' => app()->getLocale()]);
 })->name('home');
 
 // Route::view('dashboard', 'dashboard')
