@@ -44,16 +44,16 @@ Route::middleware(['auth'])->group(function () {
     //     ->name('two-factor.show');
 });
 
-// Coming Soon Routes with Locale Support
+// Waiting List Routes with Locale Support
 Route::prefix('{locale}')
     ->where(['locale' => 'en|ar'])
     ->middleware(\App\Http\Middleware\SetLocale::class)
     ->group(function () {
-        Route::get('/coming-soon', [ComingSoonController::class, 'index'])->name('coming-soon');
-        Route::post('/coming-soon', [ComingSoonController::class, 'store'])->name('coming-soon.store');
+        Route::get('/waiting-list', [ComingSoonController::class, 'index'])->name('waiting-list');
+        Route::post('/waiting-list', [ComingSoonController::class, 'store'])->name('waiting-list.store');
     });
 
-// Redirect root coming-soon to default locale
-Route::get('/coming-soon', function () {
-    return redirect()->route('coming-soon', ['locale' => app()->getLocale()]);
+// Redirect root waiting-list to default locale
+Route::get('/waiting-list', function () {
+    return redirect()->route('waiting-list', ['locale' => app()->getLocale()]);
 });

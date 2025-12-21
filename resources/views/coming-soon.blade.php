@@ -158,7 +158,7 @@
                       {{ app()->getLocale() === 'ar'
                           ? 'نمو المبيعات'
                           : 'Sales
-                                                                Growth' }}
+                                                                                                            Growth' }}
                     </div>
                     <div class="text-sm font-bold text-green-600">+127%</div>
                   </div>
@@ -210,7 +210,7 @@
               <div class="mt-6" id="waiting-list-form" data-react-component="WaitingListForm"
                 data-props="{{ json_encode([
                     'locale' => app()->getLocale(),
-                    'submit_url' => route('coming-soon.store'),
+                    'submit_url' => route('waiting-list.store'),
                     'translations' => [
                         'name_label' => __('coming-soon.form.name_label'),
                         'name_placeholder' => __('coming-soon.form.name_placeholder'),
