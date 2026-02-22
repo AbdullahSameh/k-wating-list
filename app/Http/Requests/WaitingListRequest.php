@@ -23,9 +23,11 @@ class WaitingListRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            // 'name' => 'required|string|max:255|regex:/^[\pL\s\-]+$/u',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
-            'store_url' => 'nullable|url|max:255',
+            // 'phone' => 'required|string|max:20|regex:/^([0-9\s\-\+\(\)]*)$/',
+            'store_url' => 'nullable|url|max:255|active_url',
         ];
     }
 }
