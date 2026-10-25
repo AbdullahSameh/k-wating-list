@@ -144,7 +144,9 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Registration stays off: the site is a waiting list and its only account is the admin. With it
+        // on, POST /register created accounts even though GET /register is blocked in routes/web.php.
+        // Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([

@@ -1,21 +1,17 @@
 <?php
 
-test('registration screen can be rendered', function () {
-    $response = $this->get(route('register'));
+use App\Models\User;
 
-    $response->assertStatus(200);
-});
-
-test('new users can register', function () {
-    $response = $this->post(route('register.store'), [
+test('registration is closed', function () {
+    $response = $this->post('/register', [
         'name' => 'John Doe',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 
-    $response->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
+    $response->assertClientError();
 
-    $this->assertAuthenticated();
+    $this->assertGuest();
+    expect(User::count())->toBe(0);
 });
